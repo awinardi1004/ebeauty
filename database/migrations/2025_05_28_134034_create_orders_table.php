@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('payment_receipt')->nullable();
-            $table->boolean('is_paid')->default(false);
+             $table->enum('status', ['pending','success','failed'])->default('pending');
             $table->timestamps();
         });
     }

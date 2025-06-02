@@ -9,9 +9,9 @@ class ProductVariant extends Model
 {
     use HasFactory;
 
-     protected $fillabel = [
+     protected $fillable  = [
         'product_id',
-        'variant',
+        'name',
         'price',
         'stock',
         'sku'

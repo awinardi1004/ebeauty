@@ -13,12 +13,12 @@ class ProductVariantPromotion extends Model
     protected $fillable = [
         'name',
         'product_variant_id',
-        'disc_price',
+        'disc_product_variant',
         'start_date',
         'end_date'
     ];
 
-    public function product_variant()
+    public function productVariant()
     {
         return $this->belongsTo(ProductVariant::class);
     }

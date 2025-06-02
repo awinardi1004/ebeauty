@@ -30,7 +30,7 @@ class Product extends Model
 
     public function productVariants()
     {
-        return $this->hasMany(Productvariant::class);
+        return $this->hasMany(ProductVariant::class);
     }
 
     public function cart()
