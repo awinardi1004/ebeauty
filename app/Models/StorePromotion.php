@@ -12,6 +12,7 @@ class StorePromotion extends Model
     protected $fillable = [
         'name',
         'path',
-        'is_delete'
+        'start_date',
+        'end_date'
     ];
 }

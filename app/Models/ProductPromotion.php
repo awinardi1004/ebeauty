@@ -2,30 +2,23 @@
 
 namespace App\Models;
 
-use App\Models\Product;
 use App\Models\ProductPromotionDetail;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class ProductVariant extends Model
+class ProductPromotion extends Model
 {
     use HasFactory;
 
-     protected $fillable  = [
-        'product_id',
+    protected $fillable = [
         'name',
-        'price',
-        'stock',
-        'sku'
+        'start_date',
+        'end_date',
     ];
-
-    public function product()
-    {
-        return $this->belongsTo(Product::class);
-    }
 
     public function productPromotionDetail()
     {
         return $this->hasMany(ProductPromotionDetail::class);
     }
+
 }

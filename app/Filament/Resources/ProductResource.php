@@ -30,7 +30,7 @@ class ProductResource extends Resource
     {
         return $form
             ->schema([
-                 Forms\Components\Textarea::make('title')
+                Forms\Components\Textarea::make('title')
                         ->label('Title')
                         ->required(),
 

@@ -11,14 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('store_promotions', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('path');
-            $table->dateTime('start_date');
-            $table->dateTime('end_date');
-            $table->timestamps();
-        });
+          Schema::dropIfExists('product_variant_promotions');
     }
 
     /**
@@ -26,6 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('store_promotions');
+        //
     }
 };

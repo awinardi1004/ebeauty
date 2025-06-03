@@ -2,32 +2,59 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\ProductVariant;
+use App\Models\ProductPromotion;
 use Filament\Resources\Resource;
-use App\Models\ProductVariantPromotion;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProductVariantPromotionResource\Pages;
-use App\Filament\Resources\ProductVariantPromotionResource\RelationManagers;
+use App\Filament\Resources\ProductPromotionResource\Pages;
+use App\Filament\Resources\ProductPromotionResource\RelationManagers;
 
-class ProductVariantPromotionResource extends Resource
+class ProductPromotionResource extends Resource
 {
-    protected static ?string $model = ProductVariantPromotion::class;
+    protected static ?string $model = ProductPromotion::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\Card::make([
-                    Forms\Components\Repeater::make('promotions')
-                        ->label('Daftar Promo Varian Produk')
+                    Forms\Components\TextInput::make('name')
+                        ->label('Promotion Name')
+                        ->required(),
+
+                    Forms\Components\DateTimePicker::make('start_date')
+                        ->label('Tanggal Mulai')
+                        ->required(),
+
+                    Forms\Components\DateTimePicker::make('end_date')
+                    ->label('Tanggal Berakhir')
+                    ->required()
+                    ->rules(['after:start_date'])
+                    ->afterStateUpdated(function ($state, callable $set, callable $get) {
+                        $start = $get('start_date');
+                        if ($start) {
+                            $minEndDate = Carbon::parse($start)->addDay();
+                            if (Carbon::parse($state)->lt($minEndDate)) {
+                                $set('end_date', $minEndDate);
+                            }
+                        }
+                    })
+                    ->helperText('Tanggal berakhir harus setelah tanggal mulai'),
+                ])->columns(3),
+
+                Forms\Components\Card::make([
+                    Forms\Components\Repeater::make('productPromotionDetail') 
+                        ->label('Daftar Promo Produk')
+                        ->relationship()
                         ->schema([
                             Forms\Components\Select::make('product_id')
                                 ->label('Produk')
@@ -44,6 +71,7 @@ class ProductVariantPromotionResource extends Resource
                                 })
                                 ->required()
                                 ->reactive(),
+
                             Forms\Components\Placeholder::make('current_price')
                                 ->label('Harga Saat Ini')
                                 ->content(function (callable $get) {
@@ -52,22 +80,12 @@ class ProductVariantPromotionResource extends Resource
                                     return $variant ? 'Rp' . number_format($variant->price) : '-';
                                 }),
 
-                            Forms\Components\TextInput::make('name')
-                                ->label('Nama Promo')
-                                ->required(),
-
                             Forms\Components\TextInput::make('disc_product_variant')
                                 ->label('Harga Diskon')
                                 ->numeric()
+                                ->helperText('Harga harus lebih rendah')
                                 ->required(),
 
-                            Forms\Components\DatePicker::make('start_date')
-                                ->label('Tanggal Mulai')
-                                ->required(),
-
-                            Forms\Components\DatePicker::make('end_date')
-                                ->label('Tanggal Berakhir')
-                                ->required(),
                         ])
                         ->columns(2)
                         ->createItemButtonLabel('Tambah Promo')
@@ -76,6 +94,7 @@ class ProductVariantPromotionResource extends Resource
             ]);
     }
 
+
     public static function table(Table $table): Table
     {
         return $table
@@ -83,34 +102,6 @@ class ProductVariantPromotionResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Promotion Name'),
 
-                Tables\Columns\ImageColumn::make('photo')
-                    ->label('Foto')
-                    ->disk('public')
-                    ->height(60)
-                    ->width(60)
-                    ->getStateUsing(function ($record) {
-                        return optional(
-                            $record->productVariant?->product?->productImages->first()
-                        )->image_path;
-                    }),
-
-                Tables\Columns\TextColumn::make('title')
-                    ->label('Product name')
-                    ->getStateUsing(function ($record) {
-                        return optional(
-                            $record->productVariant?->product
-                        )->title;
-                    }),
-
-                Tables\Columns\TextColumn::make('productVariant.name')
-                    ->label('Variant'),
-
-                Tables\Columns\TextColumn::make('productVariant.price')
-                    ->label('Price'),
-
-                Tables\Columns\TextColumn::make('disc_product_variant')
-                    ->label('Disc Price'),
-                
                 Tables\Columns\TextColumn::make('periode')
                     ->label('Periode')
                     ->getStateUsing(function ($record) {
@@ -119,7 +110,6 @@ class ProductVariantPromotionResource extends Resource
                         return "$start - $end";
                     }),
 
-                
             ])
             ->filters([
                 //
@@ -146,9 +136,9 @@ class ProductVariantPromotionResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListProductVariantPromotions::route('/'),
-            'create' => Pages\CreateProductVariantPromotion::route('/create'),
-            'edit' => Pages\EditProductVariantPromotion::route('/{record}/edit'),
+            'index' => Pages\ListProductPromotions::route('/'),
+            'create' => Pages\CreateProductPromotion::route('/create'),
+            'edit' => Pages\EditProductPromotion::route('/{record}/edit'),
         ];
     }
 }
