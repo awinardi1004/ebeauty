@@ -21,6 +21,8 @@ class ProductPromotionResource extends Resource
     protected static ?string $model = ProductPromotion::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-tag';
+     protected static ?string $navigationLabel= 'Management Product Promotion';
+
 
     public static function form(Form $form): Form
     {

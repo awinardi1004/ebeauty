@@ -18,7 +18,9 @@ class StorePromotionResource extends Resource
 {
     protected static ?string $model = StorePromotion::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-gift';
+    protected static ?string $navigationLabel= 'Management Store Promotion';
+
 
     public static function form(Form $form): Form
     {

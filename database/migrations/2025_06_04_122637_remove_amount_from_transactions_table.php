@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('store_promotions', function (Blueprint $table) {
-            $table->dateTime('start_date')->after('path');
-            $table->dateTime('end_date')->after('path');
+        Schema::table('transactions', function (Blueprint $table) {
+             $table->dropColumn('amount');
         });
     }
 
@@ -22,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('store_promotions', function (Blueprint $table) {
+        Schema::table('transactions', function (Blueprint $table) {
             //
         });
     }

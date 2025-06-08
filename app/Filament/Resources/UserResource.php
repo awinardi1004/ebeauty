@@ -25,6 +25,15 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\TextInput::make('username')
+                    ->label('Username')
+                    ->required()
+                    ->rules([
+                        'regex:/^[a-zA-Z0-9._]+$/',
+                    ])
+                    ->helperText('Hanya huruf, angka, titik, dan underscore. Tanpa spasi.')
+                    ->extraAttributes(['autocomplete' => 'off']),
+
                 Forms\Components\TextInput::make('name')
                     ->label('Name')
                     ->required(),

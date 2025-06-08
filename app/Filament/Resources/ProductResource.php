@@ -19,7 +19,7 @@ class ProductResource extends Resource
     protected static ?string $model = Product::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
-    protected static ?string $navigationLabel = 'Manajemen Produk';
+    protected static ?string $navigationLabel = 'Management Product';
 
     public static function getEloquentQuery(): Builder
     {
@@ -92,9 +92,9 @@ class ProductResource extends Resource
                 Forms\Components\Textarea::make('description')
                     ->label('Description')
                     ->required()
-                    ->rows(6) // tinggi lebih besar
-                    ->columnSpanFull() // lebarnya memenuhi grid
-                    ->extraAttributes(['style' => 'resize: vertical;']), // opsional: agar bisa diubah ukurannya secara manual oleh user
+                    ->rows(6) 
+                    ->columnSpanFull() 
+                    ->extraAttributes(['style' => 'resize: vertical;']),
             ]);
     }
 
@@ -127,7 +127,9 @@ class ProductResource extends Resource
                     }),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('category_id')
+                    ->relationship('category', 'name')
+                    ->label('Category'),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
