@@ -16,4 +16,9 @@ class EditProductReview extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return ProductReviewResource::getUrl('index');
+    }
 }

@@ -9,4 +9,9 @@ use Filament\Resources\Pages\CreateRecord;
 class CreateProductReview extends CreateRecord
 {
     protected static string $resource = ProductReviewResource::class;
+
+    protected function getRedirectUrl(): string
+    {
+        return ProductReviewResource::getUrl('index');
+    }
 }

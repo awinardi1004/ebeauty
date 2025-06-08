@@ -16,4 +16,9 @@ class EditOrder extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+    protected function getRedirectUrl(): string
+    {
+        return OrderResource::getUrl('index');
+    }
 }

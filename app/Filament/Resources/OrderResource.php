@@ -107,9 +107,31 @@ class OrderResource extends Resource
                 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status'),
+
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Order Date'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'success' => 'Success',
+                        'failed' => 'Failed',
+                    ]),
+
+                Tables\Filters\Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from')
+                            ->label('Created From'),
+                        Forms\Components\DatePicker::make('created_until')
+                            ->label('Created Until'),
+        ])
+        ->query(function ($query, array $data) {
+            return $query
+                ->when($data['created_from'], fn ($q) => $q->whereDate('created_at', '>=', $data['created_from']))
+                ->when($data['created_until'], fn ($q) => $q->whereDate('created_at', '<=', $data['created_until']));
+        }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
