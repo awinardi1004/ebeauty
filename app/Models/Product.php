@@ -43,7 +43,7 @@ class Product extends Model
         return $this->hasMany(Transaction::class);
     }
 
-    public function product_review()
+    public function product_reviews()
     {
         return $this->hasMany(ProductReview::class);
     }

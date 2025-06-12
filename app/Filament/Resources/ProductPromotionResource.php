@@ -54,7 +54,7 @@ class ProductPromotionResource extends Resource
                 ])->columns(3),
 
                 Forms\Components\Card::make([
-                    Forms\Components\Repeater::make('productPromotionDetail') 
+                    Forms\Components\Repeater::make('productPromotionDetails') 
                         ->label('Daftar Promo Produk')
                         ->relationship()
                         ->schema([

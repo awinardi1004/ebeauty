@@ -16,7 +16,7 @@ class ProductPromotion extends Model
         'end_date',
     ];
 
-    public function productPromotionDetail()
+    public function productPromotionDetails()
     {
         return $this->hasMany(ProductPromotionDetail::class);
     }

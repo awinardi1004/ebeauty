@@ -24,8 +24,8 @@ class ProductVariant extends Model
         return $this->belongsTo(Product::class);
     }
 
-    public function productPromotionDetail()
+    public function productPromotionDetails()
     {
-        return $this->hasMany(ProductPromotionDetail::class);
+        return $this->hasMany(ProductPromotionDetail::class, 'product_variant_id');
     }
 }

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->string('username')->unique()->after('id');
+        Schema::table('store_promotions', function (Blueprint $table) {
+            $table->boolean('is_active')->after('end_date');
         });
     }
 
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('store_promotion', function (Blueprint $table) {
             //
         });
     }

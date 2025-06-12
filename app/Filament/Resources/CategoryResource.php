@@ -30,6 +30,7 @@ class CategoryResource extends Resource
                     ->required(),
                 Forms\Components\FileUpload::make('icon')
                     ->label('Icon')
+                    ->directory('category-images')
                     ->image()
                     ->required(),      
             ]);

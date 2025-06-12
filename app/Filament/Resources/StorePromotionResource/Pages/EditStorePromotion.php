@@ -16,4 +16,9 @@ class EditStorePromotion extends EditRecord
             Actions\DeleteAction::make(),
         ];
     }
+
+     protected function getRedirectUrl(): string
+    {
+        return StorePromotionResource::getUrl('index');
+    }
 }

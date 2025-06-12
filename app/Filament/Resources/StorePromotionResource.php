@@ -30,14 +30,15 @@ class StorePromotionResource extends Resource
                     ->label('Category Name')
                     ->required(),
 
+                
+                Forms\Components\Toggle::make('is_active')
+                    ->label('Activate')
+                    ->default(false)
+                    ->required(),
+
                 Forms\Components\DateTimePicker::make('start_date')
                         ->label('Tanggal Mulai')
                         ->required(),
-                
-                Forms\Components\FileUpload::make('path')
-                    ->label('Photo Promotion')
-                    ->image()
-                    ->required(),
 
                 Forms\Components\DateTimePicker::make('end_date')
                     ->label('Tanggal Berakhir')
@@ -53,6 +54,12 @@ class StorePromotionResource extends Resource
                         }
                     })
                     ->helperText('Tanggal berakhir harus setelah tanggal mulai'),
+
+                Forms\Components\FileUpload::make('path')
+                    ->label('Photo Promotion')
+                    ->image()
+                    ->directory('store-promotion-images')
+                    ->required(),
             ]);
     }
 
@@ -74,6 +81,14 @@ class StorePromotionResource extends Resource
                         $end = \Carbon\Carbon::parse($record->end_date)->format('d M Y');
                         return "$start - $end";
                     }),
+                
+                Tables\Columns\IconColumn::make('is_active')
+                    ->label('Active')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
             ])
             ->filters([
                 //

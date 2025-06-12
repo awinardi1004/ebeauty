@@ -30,6 +30,6 @@ class ProductPromotionDetail extends Model
 
     public function productPromotion()
     {
-        return $this->belongsTo(ProductPromotion::class);
+        return $this->belongsTo(ProductPromotion::class, 'product_promotion_id');
     }
 }

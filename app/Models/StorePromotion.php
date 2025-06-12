@@ -13,6 +13,7 @@ class StorePromotion extends Model
         'name',
         'path',
         'start_date',
-        'end_date'
+        'end_date',
+        'is_active'
     ];
 }
