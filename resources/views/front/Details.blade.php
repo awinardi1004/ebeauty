@@ -104,6 +104,7 @@
                             @endphp
                             <button 
                                 class="px-3 py-1 text-sm border rounded variant-btn" 
+                                data-id="{{ $variant->id }}"
                                 data-price="{{ $variant->price }}"
                                 data-disc="{{ $promo ? $promo->disc_product_variant : '' }}"
                                 data-name="{{ $variant->name }}">
@@ -171,22 +172,32 @@
 
 
         <!-- Quantity + Add to Cart -->
-        <div class="flex flex-wrap items-center gap-4 mt-4">
+        <div class="flex flex-wrap items-end gap-4 mt-4">
             <!-- Quantity -->
             <div>
-            <p class="text-sm font-medium mb-1">Quantity</p>
-            <div class="flex items-center border rounded overflow-hidden">
-                <button onclick="decreaseQty()" class="px-3 py-1 text-lg">−</button>
-                <span id="qty" class="px-4 py-1">1</span>
-                <button onclick="increaseQty()" class="px-3 py-1 text-lg">+</button>
-            </div>
+                <p class="text-sm font-medium mb-1">Quantity</p>
+                <div class="flex items-center border rounded overflow-hidden">
+                    <button type="button" onclick="decreaseQty()" class="px-3 py-1 text-lg">−</button>
+                    <span id="qty" class="px-4 py-1">1</span>
+                    <button type="button" onclick="increaseQty()" class="px-3 py-1 text-lg">+</button>
+                </div>
             </div>
 
             <!-- Add to Cart -->
-            <button class="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded self-end">
-            Add to cart
-            </button>
+            <form method="POST" action="{{ route('add.to.cart') }}" class="self-end" id="addToCartForm">
+                @csrf
+                <input type="hidden" name="product_variant_id" id="selectedVariantId">
+                <input type="hidden" name="quantity" id="quantityInput" value="1">
+                <input type="hidden" name="price_at_addition" id="selectedVariantPrice">
+
+                <button type="submit" class="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded">
+                    🛒 Add to cart
+                </button>
+            </form>
         </div>
+
+
+
         </div>
     </div>
 </section>
@@ -220,127 +231,139 @@
 
 @push('after-script')
 <script>
-    let quantity = 1;
-
-    function updateQtyDisplay() {
-        document.getElementById("qty").innerText = quantity;
-    }
-
-    function increaseQty() {
-        quantity += 1;
-        updateQtyDisplay();
-    }
-
-    function decreaseQty() {
-        if (quantity > 1) {
-        quantity -= 1;
-        updateQtyDisplay();
-        }
-    }
-
-    let currentSlide = 0;
-    const slides = document.querySelectorAll("#carousel img");
-
-    function showSlide(index) {
-        slides.forEach((slide, i) => {
-        slide.style.opacity = i === index ? "1" : "0";
-        });
-    }
-
-    function prevSlide() {
-        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-        showSlide(currentSlide);
-    }
-
-    function nextSlide() {
-        currentSlide = (currentSlide + 1) % slides.length;
-        showSlide(currentSlide);
-    }
-
-    // Inisialisasi slide pertama
-    showSlide(currentSlide);
-
-    const slider = document.getElementById('testimonialWrapper');
-    let isDown = false;
-    let startX;
-    let scrollLeft;
-
-    slider.addEventListener('mousedown', (e) => {
-        isDown = true;
-        slider.classList.add('cursor-grabbing');
-        startX = e.pageX - slider.offsetLeft;
-        scrollLeft = slider.scrollLeft;
-    });
-
-    slider.addEventListener('mouseleave', () => {
-        isDown = false;
-        slider.classList.remove('cursor-grabbing');
-    });
-
-    slider.addEventListener('mouseup', () => {
-        isDown = false;
-        slider.classList.remove('cursor-grabbing');
-    });
-
-    slider.addEventListener('mousemove', (e) => {
-        if (!isDown) return;
-        e.preventDefault();
-        const x = e.pageX - slider.offsetLeft;
-        const walk = (x - startX) * 2; // kecepatan geser
-        slider.scrollLeft = scrollLeft - walk;
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const buttons = document.querySelectorAll('.variant-btn');
-        const priceText = document.getElementById('selected-price');
-
-        buttons.forEach(button => {
-            button.addEventListener('click', function () {
-                // Reset all buttons
-                buttons.forEach(btn => btn.classList.remove('bg-black', 'text-white'));
-
-                // Highlight selected button
-                this.classList.add('bg-black', 'text-white');
-
-                // Update price
-                const price = this.getAttribute('data-price');
-                const name = this.getAttribute('data-name');
-                priceText.innerText = `Rp. ${parseInt(price).toLocaleString()}`;
-            });
-        });
-    });
-</script>
-
-<script>
     document.addEventListener('DOMContentLoaded', () => {
+        // === QUANTITY LOGIC ===
+        let quantity = 1;
+        const quantitySpan = document.getElementById('qty');
+        const quantityInput = document.getElementById('quantityInput');
+
+        function updateQtyDisplay() {
+            quantitySpan.innerText = quantity;
+            if (quantityInput) quantityInput.value = quantity;
+        }
+
+        window.increaseQty = function () {
+            quantity += 1;
+            updateQtyDisplay();
+        }
+
+        window.decreaseQty = function () {
+            if (quantity > 1) {
+                quantity -= 1;
+                updateQtyDisplay();
+            }
+        }
+
+        updateQtyDisplay();
+
+        // === CAROUSEL LOGIC ===
+        let currentSlide = 0;
+        const slides = document.querySelectorAll("#carousel img");
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.style.opacity = i === index ? "1" : "0";
+            });
+        }
+
+        window.prevSlide = function () {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        window.nextSlide = function () {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        if (slides.length > 0) showSlide(currentSlide);
+
+        // === TESTIMONIAL SCROLL LOGIC ===
+        const slider = document.getElementById('testimonialWrapper');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        if (slider) {
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('cursor-grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        // === VARIANT & PRICE LOGIC ===
         const variantButtons = document.querySelectorAll('.variant-btn');
         const priceContainer = document.getElementById('price-container');
+        const selectedVariantIdInput = document.getElementById('selectedVariantId');
+        const selectedVariantPriceInput = document.getElementById('selectedVariantPrice');
+        const form = document.getElementById('addToCartForm');
 
         variantButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const price = parseInt(button.getAttribute('data-price'));
-                const disc = button.getAttribute('data-disc');
+            button.addEventListener('click', function () {
+                // Reset styles
+                variantButtons.forEach(b => b.classList.remove('bg-black', 'text-white', 'bg-gray-800'));
+                this.classList.add('bg-black', 'text-white');
 
-                if (disc) {
-                    priceContainer.innerHTML = `
-                        <p class="text-sm text-gray-600 mb-1" style="text-decoration: line-through;">
-                            Rp. ${price.toLocaleString('id-ID')}
-                        </p>
-                        <p class="text-lg font-semibold text-black mb-4">
-                            Rp. ${parseInt(disc).toLocaleString('id-ID')}
-                        </p>
-                    `;
-                } else {
-                    priceContainer.innerHTML = `
-                        <p class="text-lg font-semibold text-black mb-4">
-                            Rp. ${price.toLocaleString('id-ID')}
-                        </p>
-                    `;
+                // Get data
+                const variantId = this.dataset.id;
+                const price = parseInt(this.dataset.price);
+                const disc = this.dataset.disc;
+
+                // Update price container
+                if (priceContainer) {
+                    if (disc) {
+                        priceContainer.innerHTML = `
+                            <p class="text-sm text-gray-600 mb-1" style="text-decoration: line-through;">
+                                Rp. ${price.toLocaleString('id-ID')}
+                            </p>
+                            <p class="text-lg font-semibold text-black mb-4">
+                                Rp. ${parseInt(disc).toLocaleString('id-ID')}
+                            </p>
+                        `;
+                    } else {
+                        priceContainer.innerHTML = `
+                            <p class="text-lg font-semibold text-black mb-4">
+                                Rp. ${price.toLocaleString('id-ID')}
+                            </p>
+                        `;
+                    }
                 }
+
+                // Update hidden inputs
+                if (selectedVariantIdInput) selectedVariantIdInput.value = variantId;
+                if (selectedVariantPriceInput) selectedVariantPriceInput.value = disc || price;
             });
         });
+
+        // === FORM VALIDATION ===
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                if (!selectedVariantIdInput.value) {
+                    e.preventDefault();
+                    alert("Please select a variant before adding to cart.");
+                }
+            });
+        }
     });
 </script>
 

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\FrontController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
@@ -20,6 +21,9 @@ Route::get('/', [FrontController::class, 'index'])->name('front.index');
 Route::get('/new_products', [FrontController::class, 'new_products'])->name('front.new_products');
 Route::get('/popular_products', [FrontController::class, 'popular_products'])->name('front.popular_products');
 Route::get('/product/{product}', [ProductController::class, 'show_product'])->name('front.details');
+
+Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth')->name('add.to.cart');
+
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Models\Cart;
 use App\Models\Transaction;
 use App\Models\ProductReview;
 use Illuminate\Database\Eloquent\Model;
@@ -31,11 +30,6 @@ class Product extends Model
     public function productVariants()
     {
         return $this->hasMany(ProductVariant::class);
-    }
-
-    public function cart()
-    {
-        return $this->hasMany(Cart::class);
     }
 
     public function transaction()

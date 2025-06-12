@@ -28,4 +28,9 @@ class ProductVariant extends Model
     {
         return $this->hasMany(ProductPromotionDetail::class, 'product_variant_id');
     }
+
+    public function cart()
+    {
+        return $this->hasMany(Cart::class);
+    }
 }
