@@ -21,11 +21,11 @@ class Cart extends Model
 
     public function user()
     {
-        $this->belongsTo(User::class);
+        return $this->belongsTo(User::class);
     }
 
     public function product_variant()
     {
-        $this->belongsTo(ProductVariant::class);
+        return $this->belongsTo(ProductVariant::class);
     }
 }

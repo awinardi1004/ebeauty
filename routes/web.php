@@ -22,7 +22,15 @@ Route::get('/new_products', [FrontController::class, 'new_products'])->name('fro
 Route::get('/popular_products', [FrontController::class, 'popular_products'])->name('front.popular_products');
 Route::get('/product/{product}', [ProductController::class, 'show_product'])->name('front.details');
 
-Route::post('/add-to-cart', [CartController::class, 'addToCart'])->middleware('auth')->name('add.to.cart');
+
+Route::middleware(['auth'])->group(function(){
+    Route::post('/add-to-cart', [CartController::class, 'addToCart'])->name('add_to_cart');
+    Route::get('/cart', [CartController::class, 'show_cart'])->name('show_cart');
+    Route::post('/cart/{cart}', [CartController::class, 'update_cart'])->name('update_cart');
+    Route::delete('/cart/{cart}', [CartController::class, 'delete_cart'])->name('delete_cart');
+});
+
+
 
 
 Route::get('/dashboard', function () {
