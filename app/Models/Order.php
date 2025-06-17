@@ -17,7 +17,6 @@ class Order extends Model
         'user_id',
         'payment_receipt',
         'status',
-        'amount'
     ];
 
     public function user()
@@ -25,7 +24,7 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function transaction()
+    public function transactions()
     {
         return $this->hasMany(Transaction::class);
     }

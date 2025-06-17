@@ -243,11 +243,94 @@
 @endsection
 
 @push('after-script')
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
+        
         let quantity = 1;
         const qtyDisplay = document.getElementById("qty");
         const quantityInput = document.getElementById("quantityInput");
+
+        function updateQtyDisplay() {
+            if (qtyDisplay) qtyDisplay.innerText = quantity;
+            if (quantityInput) quantityInput.value = quantity;
+        }
+
+        window.increaseQty = function() {
+            quantity += 1;
+            updateQtyDisplay();
+        }
+
+        window.decreaseQty = function() {
+            if (quantity > 1) {
+                quantity -= 1;
+                updateQtyDisplay();
+            }
+        }
+
+        
+        updateQtyDisplay();
+
+        
+        let currentSlide = 0;
+        const slides = document.querySelectorAll("#carousel img");
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.style.opacity = i === index ? "1" : "0";
+                slide.style.zIndex = i === index ? "1" : "0";
+            });
+        }
+
+        window.prevSlide = function() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        window.nextSlide = function() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        
+        if (slides.length > 0) {
+            showSlide(currentSlide);
+        }
+
+        
+        const slider = document.getElementById('testimonialWrapper');
+        if (slider) {
+            let isDown = false;
+            let startX;
+            let scrollLeft;
+
+            slider.addEventListener('mousedown', (e) => {
+                isDown = true;
+                slider.classList.add('cursor-grabbing');
+                startX = e.pageX - slider.offsetLeft;
+                scrollLeft = slider.scrollLeft;
+            });
+
+            slider.addEventListener('mouseleave', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+
+            slider.addEventListener('mouseup', () => {
+                isDown = false;
+                slider.classList.remove('cursor-grabbing');
+            });
+
+            slider.addEventListener('mousemove', (e) => {
+                if (!isDown) return;
+                e.preventDefault();
+                const x = e.pageX - slider.offsetLeft;
+                const walk = (x - startX) * 2;
+                slider.scrollLeft = scrollLeft - walk;
+            });
+        }
+
+        
         const variantButtons = document.querySelectorAll('.variant-btn');
         const selectedVariantId = document.getElementById('selectedVariantId');
         const selectedVariantPrice = document.getElementById('selectedVariantPrice');
@@ -256,46 +339,29 @@
         const addToCartForm = document.getElementById('addToCartForm');
         const errorMessage = document.getElementById('errorMessage');
 
-        function updateQtyDisplay() {
-            qtyDisplay.innerText = quantity;
-            quantityInput.value = quantity;
-        }
-
-        window.increaseQty = function () {
-            quantity += 1;
-            updateQtyDisplay();
-        }
-
-        window.decreaseQty = function () {
-            if (quantity > 1) {
-                quantity -= 1;
-                updateQtyDisplay();
-            }
-        }
-
-        // Atur default variant (jika ada tombol pertama)
+        
         const defaultBtn = variantButtons[0];
         if (defaultBtn) {
             defaultBtn.classList.add('bg-black', 'text-white');
-            selectedVariantId.value = defaultBtn.dataset.id;
-            selectedVariantPrice.value = defaultBtn.dataset.disc || defaultBtn.dataset.price;
-            stockInfo.innerText = 'Stock: ' + defaultBtn.dataset.stock;
+            if (selectedVariantId) selectedVariantId.value = defaultBtn.dataset.id;
+            if (selectedVariantPrice) selectedVariantPrice.value = defaultBtn.dataset.disc || defaultBtn.dataset.price;
+            if (stockInfo) stockInfo.innerText = 'Stock: ' + defaultBtn.dataset.stock;
         }
 
-        // Event listener untuk setiap varian
+        
         variantButtons.forEach(button => {
-            button.addEventListener('click', function () {
-                // Reset style semua tombol
+            button.addEventListener('click', function() {
+                
                 variantButtons.forEach(b => b.classList.remove('bg-black', 'text-white'));
                 this.classList.add('bg-black', 'text-white');
 
-                // Ambil data dari tombol
+                
                 const variantId = this.dataset.id;
                 const price = parseInt(this.dataset.price);
                 const disc = this.dataset.disc;
                 const stock = this.dataset.stock;
 
-                // Update harga
+                
                 if (priceContainer) {
                     if (disc) {
                         priceContainer.innerHTML = `
@@ -315,61 +381,67 @@
                     }
                 }
 
-                // Update info stok
+                
                 if (stockInfo) {
                     stockInfo.innerText = `Stock: ${stock}`;
                 }
 
-                // Update hidden input untuk form
+                
                 if (selectedVariantId) selectedVariantId.value = variantId;
                 if (selectedVariantPrice) selectedVariantPrice.value = disc || price;
             });
         });
 
-        addToCartForm.addEventListener('submit', function (e) {
-            const stock = parseInt(document.querySelector('.variant-btn.bg-black')?.dataset.stock || '0');
-            const quantity = parseInt(document.getElementById('quantityInput').value);
-            const cartQuantity = parseInt(document.querySelector('.variant-btn.bg-black')?.dataset.cartQuantity || '0');
-            const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
+        
+        if (addToCartForm) {
+            addToCartForm.addEventListener('submit', function(e) {
+                const stock = parseInt(document.querySelector('.variant-btn.bg-black')?.dataset.stock || '0');
+                const quantity = parseInt(document.getElementById('quantityInput').value);
+                const cartQuantity = parseInt(document.querySelector('.variant-btn.bg-black')?.dataset.cartQuantity || '0');
+                const isLoggedIn = {{ auth()->check() ? 'true' : 'false' }};
 
-            // Reset error
-            errorMessage.textContent = '';
-            errorMessage.classList.add('hidden');
+                
+                if (errorMessage) {
+                    errorMessage.textContent = '';
+                    errorMessage.classList.add('hidden');
+                }
 
-            // Cek login
-            if (!isLoggedIn) {
-                e.preventDefault();
-                errorMessage.textContent = 'Silakan login terlebih dahulu untuk menambahkan ke keranjang.';
-                errorMessage.classList.remove('hidden');
-                return;
-            }
+                
+                if (!isLoggedIn) {
+                    e.preventDefault();
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Silakan login terlebih dahulu untuk menambahkan ke keranjang.';
+                        errorMessage.classList.remove('hidden');
+                    }
+                    return;
+                }
 
-            // Cek stock habis
-            if (stock === 0) {
-                e.preventDefault();
-                errorMessage.textContent = 'Stok untuk varian ini habis.';
-                errorMessage.classList.remove('hidden');
-                return;
-            }
+                
+                if (stock === 0) {
+                    e.preventDefault();
+                    if (errorMessage) {
+                        errorMessage.textContent = 'Stok untuk varian ini habis.';
+                        errorMessage.classList.remove('hidden');
+                    }
+                    return;
+                }
 
-            // Cek total quantity melebihi stok
-            if (quantity + cartQuantity > stock) {
-                e.preventDefault();
-                errorMessage.textContent = `Jumlah melebihi stok tersedia. Anda sudah memiliki ${cartQuantity} item di keranjang.`;
-                errorMessage.classList.remove('hidden');
-                return;
-            }
-        });
+                
+                if (quantity + cartQuantity > stock) {
+                    e.preventDefault();
+                    if (errorMessage) {
+                        errorMessage.textContent = `Jumlah melebihi stok tersedia. Anda sudah memiliki ${cartQuantity} item di keranjang.`;
+                        errorMessage.classList.remove('hidden');
+                    }
+                    return;
+                }
+            });
+        }
 
+        setTimeout(() => {
+            const alertBox = document.querySelector('[role="alert"]');
+            if (alertBox) alertBox.remove();
+        }, 3000);
     });
-
-    setTimeout(() => {
-        const alertBox = document.querySelector('[role="alert"]');
-        if (alertBox) alertBox.remove();
-    }, 3000);
-
 </script>
-
-
-
 @endpush

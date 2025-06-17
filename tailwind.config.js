@@ -9,6 +9,14 @@ export default {
         './resources/views/**/*.blade.php',
     ],
 
+        safelist: [
+        'bg-red-500',
+        'bg-green-500',
+        'bg-amber-500',
+        'bg-yellow-500', 
+        'text-white',
+    ],
+
     theme: {
         extend: {
             fontFamily: {
@@ -18,6 +26,6 @@ export default {
     },
 
     plugins: [
-        forms, require('@tailwindcss/line-clamp'),
+        forms,
     ],
 };

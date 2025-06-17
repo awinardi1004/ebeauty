@@ -11,9 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('transactions', function (Blueprint $table) {
-             $table->dropColumn('amount');
-        });
+        DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'tf_uploaded', 'success', 'failed') DEFAULT 'pending'");
     }
 
     /**
@@ -21,8 +19,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('transactions', function (Blueprint $table) {
-            //
-        });
+        DB::statement("ALTER TABLE orders MODIFY COLUMN status ENUM('pending', 'success', 'failed') DEFAULT 'pending'");
     }
 };

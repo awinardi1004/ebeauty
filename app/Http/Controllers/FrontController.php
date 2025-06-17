@@ -76,4 +76,29 @@ class FrontController extends Controller
 
         return view('front.popular_products', ['popular_products' => $popular_products]);
     }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->input('keyword');
+
+        $products = Product::query()
+        ->where('title', 'LIKE', '%'.$keyword.'%')
+        ->orWhereHas('category', function ($query) use ($keyword){
+            $query->where('name', 'LIKE', '%'. $keyword . '%');
+        })->get();
+
+        return view('front.search', [
+            'products' =>  $products
+        ]);
+    }
+
+    public function category(Category $category)
+    {
+        $product_categories = Product::where('category_id',  $category->id)->orderBy('created_at', 'desc')->get();
+
+        return view('front.category', [
+            'category' => $category,
+            'product_categories' => $product_categories
+        ]);
+    }
 }

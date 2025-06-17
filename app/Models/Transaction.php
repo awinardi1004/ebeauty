@@ -16,6 +16,8 @@ class Transaction extends Model
         'product_id',
         'order_id',
         'qty',
+        'price_at_addition',
+        'amount',
         'product_variant_id'
     ];
 

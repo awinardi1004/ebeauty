@@ -39,9 +39,9 @@ class OrderResource extends Resource
                     ->searchable(),
 
                 Forms\Components\Card::make([
-                    Forms\Components\Repeater::make('transaction') 
+                    Forms\Components\Repeater::make('transactions') 
                         ->label('Daftar Produk')
-                        ->relationship('transaction')
+                        ->relationship('transactions')
                         ->defaultItems(1)
                         ->schema([
                             Forms\Components\Select::make('product_id')
@@ -68,16 +68,12 @@ class OrderResource extends Resource
                         ])->createItemButtonLabel('Tambah Produk')
                 ]),
 
-                Forms\Components\FileUpload::make('payment_receipt')
-                    ->label('Payment Receipt')
-                    ->disk('public')
-                    ->directory('payment-receipts') // opsional
-                    ->image(), // jika ingin hanya file gambar
-                
-                Forms\Components\TextInput::make('amount')
-                    ->label('Total')
-                    ->numeric()
-                    ->required(),
+                Forms\Components\Placeholder::make('total_amount')
+                    ->label('Total Amount')
+                    ->content(function ($record) {
+                        $total = $record->transactions->sum('amount');
+                        return 'Rp ' . number_format($total, 0, ',', '.');
+                    }),
 
                 Forms\Components\Select::make('status')
                     ->label('Status')
@@ -89,6 +85,14 @@ class OrderResource extends Resource
                     ->default('pending')
                     ->required(),
 
+
+                Forms\Components\FileUpload::make('payment_receipt')
+                    ->label('Payment Receipt')
+                    ->disk('public')
+                    ->directory('payment-receipts')
+                    ->image()
+                    ->imagePreviewHeight('500')
+                    ->disabled(),
             ]);
     }
 
@@ -101,9 +105,6 @@ class OrderResource extends Resource
 
                 Tables\Columns\TextColumn::make('user.username')
                     ->label('Username '),
-                
-                Tables\Columns\TextColumn::make('amount')
-                    ->label('Total'),
                 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Status'),

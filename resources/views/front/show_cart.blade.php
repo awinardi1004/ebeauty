@@ -19,7 +19,7 @@
 
                 <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-50">
                     <a href="{{ route('profile.edit') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Profile</a>
-                    <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Order</a>
+                    <a href="{{ route('index_order') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Order</a>
                     <a href="{{ route('show_cart') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Cart</a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
@@ -88,7 +88,10 @@
       <div class="text-lg font-semibold">Amount :</div>
       <div class="flex items-center gap-4">
         <span id="grand-total" class="text-lg font-semibold">Rp.0</span>
-        <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">Checkout</button>
+        <form action="{{ route('checkout') }}" method="post">
+          @csrf
+          <button class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" @if($carts->isEmpty()) disabled @endif>Checkout</button>
+        </form>
       </div>
     </div>
   </section>

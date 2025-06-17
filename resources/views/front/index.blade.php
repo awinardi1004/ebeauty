@@ -6,31 +6,34 @@
 
 <header class="bg-[#ff859b] pb-8 px-4 pt-10" style="margin-top: -64px;">
     <div>
-        <!-- Carousel Container -->
         <div class="relative w-full max-w-4xl mx-auto overflow-hidden border bg-gray-200 h-50">
-            <!-- Gambar-gambar banner -->
             <div id="carousel" class="flex transition-transform duration-500">
                 @foreach ($store_banners as $banner)
                     <img src="{{ asset('storage/' . $banner->path) }}" class="w-full flex-shrink-0" alt="Store Banner">
                 @endforeach
             </div>
 
-            <!-- Tombol panah -->
+    
             <button onclick="prevSlide()" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-3xl text-white">&lt;</button>
             <button onclick="nextSlide()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-3xl text-white">&gt;</button>
         </div>
 
-        <!-- Ikon -->
         <div class="flex justify-center gap-5 mt-6 flex-wrap">
             @foreach ($categories as $category)
                 <div class="flex flex-col items-center mx-10">
-                    <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
-                    <img src="{{ asset('storage/' . $category->icon)}}" alt="Icon 1" class="w-full h-full object-cover" />
-                    </div>
-                    <h4 class="mt-2 text-center text-sm">{{ $category->name }}</h4>
+                    <form method="GET" action="{{ route('front.category', $category->id) }}" class="flex flex-col items-center mx-4">
+                        @csrf
+                        <button type="submit" class="flex flex-col items-center focus:outline-none">
+                            <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                                <img src="{{ asset('storage/' . $category->icon) }}" alt="{{ $category->name }}" class="w-full h-full object-cover" />
+                            </div>
+                            <h4 class="mt-2 text-center text-sm text-black">{{ $category->name }}</h4>
+                        </button>
+                    </form>
                 </div>
             @endforeach
         </div>
+
     </div>
 </header>
 
